@@ -13,28 +13,26 @@ class BankingSpec extends Specification with CatsEffect {
       val map: IO[Ref[IO, Map[AccountId, Money]]] = IO.ref(Map())
       map.flatMap(ref => {
         Accounts.make[IO](ref).createNew
-          .flatMap(id => ref
-            .get
-            .map(m => m.get(id))
-            .map(money => money
-              .fold[Result](
-                failure("failed to create account")
-              )(
-                m => m must_== Monoid[Money].empty)
-            )
+          .map(acc => acc
+            .fold[Result](
+              failure("failed to create account")
+            )(
+              acc => acc.balance must_== Monoid[Money].empty)
           )
       })
     }
   }
   "deposit money" should {
     "add up money to its account balance" in {
+      //      val createdAccount = Account()
+      //      val map: IO[Ref[IO, Map[AccountId, Money]]] = IO.ref(Map())
       pending
-      //      import MonoidSyntax._
-      //      val account = new Account()
-      //      val money = MoneyGen.positiveBalance.sample.getOrEmpty
-      //      val expected = account.balance |+| money
+      //            import MonoidSyntax._
+      //            val account = new Account()
+      //            val money = MoneyGen.positiveBalance.sample.getOrEmpty
+      //            val expected = account.balance |+| money
       //
-      //      account.deposit(money).balance === expected
+      //            account.deposit(money).balance === expected
     }
   }
 

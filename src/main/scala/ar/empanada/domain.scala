@@ -15,6 +15,5 @@ object domain {
   }
 
   final case class AccountId(id: Int) extends AnyVal
-
-  final case class Account(id: AccountId, money: Money)
+  final case class Account(id: AccountId, balance: Money)
 }

@@ -1,6 +1,6 @@
 package ar.empanada
 
-import ar.empanada.domain.{AccountId, Money}
+import ar.empanada.domain.{Account, AccountId, Money}
 import cats.effect.Ref
 import cats.effect.kernel.Concurrent
 import cats.kernel.Monoid
@@ -8,7 +8,7 @@ import cats.syntax.all._
 
 trait Accounts[F[_]]{
 //  def deposit(id: Int, money: Money): F[Unit]
-  def createNew: F[AccountId]
+  def createNew: F[Option[Account]]
 }
 
 object Accounts{
@@ -16,11 +16,15 @@ object Accounts{
     persistence: Ref[F, Map[AccountId, Money]]
   ): Accounts[F] =
     new Accounts[F] {
-      override def createNew: F[AccountId] = {
+      override def createNew: F[Option[Account]] = {
         val newId = AccountId(1)
         persistence
           .updateAndGet(m => m + (newId -> Monoid[Money].empty))
-          .as(newId)
+          .map(m => m.collectFirst{
+              case (id, money) if id == newId => Account(id, money)
+            }
+          )
       }
+
     }
 }
