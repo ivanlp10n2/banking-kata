@@ -3,13 +3,20 @@ package ar.empanada
 import ar.empanada.domain.{AccountId, Money}
 import cats.Monoid
 import cats.effect.testing.specs2.CatsEffect
+import cats.effect.unsafe.implicits.global
 import cats.effect.{IO, Ref}
+import cats.syntax.all._
+import org.scalacheck.Prop.forAll
+import org.specs2.ScalaCheck
 import org.specs2.execute.Result
-import org.specs2.mutable.Specification
+import org.specs2.matcher.Matchers
+import org.specs2.mutable.SpecificationLike
 
-class BankingSpec extends Specification with CatsEffect {
-  "create account >> get account " should {
-    " return a new account with zero balance" in {
+class BankingSpec extends SpecificationLike with ScalaCheck with Matchers with CatsEffect {
+
+  "create account >> get account" should {
+    "return a new account with zero balance " in {
+
       val map: IO[Ref[IO, Map[AccountId, Money]]] = IO.ref(Map())
       map.flatMap(ref => {
         Accounts.make[IO](ref).createNew
@@ -21,19 +28,27 @@ class BankingSpec extends Specification with CatsEffect {
           )
       })
     }
-  }
-  "deposit money" should {
-    "add up money to its account balance" in {
-      //      val createdAccount = Account()
-      //      val map: IO[Ref[IO, Map[AccountId, Money]]] = IO.ref(Map())
-      pending
-      //            import MonoidSyntax._
-      //            val account = new Account()
-      //            val money = MoneyGen.positiveBalance.sample.getOrEmpty
-      //            val expected = account.balance |+| money
-      //
-      //            account.deposit(money).balance === expected
-    }
-  }
 
+    "deposit money" should {
+      "add up money to its account balance" in {
+        pending
+        import gen.generators._
+        val map: IO[Ref[IO, Map[AccountId, Money]]] = IO.ref(Map())
+        forAll(positiveAccountBalance, positiveMoney) { (account, moneyToAdd) =>
+          val expected = account.balance |+| moneyToAdd
+          map.flatMap(ref =>
+            ref.update(m => m + (account.id -> account.balance)) *>
+              Accounts.make[IO](ref).deposit(account.id, moneyToAdd)
+                .map(acc => acc
+                  .fold[Result](
+                    failure("failed to deposit in account")
+                  )(
+                    acc => acc.balance must_== expected)
+                )
+          ).unsafeRunSync()
+        }
+      }
+    }
+
+  }
 }

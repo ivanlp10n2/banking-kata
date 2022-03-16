@@ -15,9 +15,11 @@ lazy val root = (project in file(".")).settings(
 
     // better monadic for compiler plugin as suggested by documentation
     compilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
+
+
     "org.typelevel" %% "cats-effect-testing-specs2" % "1.4.0" % Test,
-    "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % Test,
-     "org.scalacheck" %% "scalacheck" % "1.14.1" % Test
+    "org.scalacheck" %% "scalacheck" % "1.14.1" % Test,
+    "org.specs2" %% "specs2-scalacheck" % "4.13.2" % Test
   ),
   addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.13.0" cross CrossVersion.full),
   addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1"),

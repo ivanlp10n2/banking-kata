@@ -1,13 +1,15 @@
 package ar.empanada
 
 import ar.empanada.domain.{Account, AccountId, Money}
-import cats.effect.Ref
+import cats.effect.{IO, Ref}
 import cats.effect.kernel.Concurrent
 import cats.kernel.Monoid
 import cats.syntax.all._
 
 trait Accounts[F[_]]{
-//  def deposit(id: Int, money: Money): F[Unit]
+  def deposit(id: AccountId, moneyToAdd: Money): IO[Option[Account]] = ???
+
+  //  def deposit(id: Int, money: Money): F[Unit]
   def createNew: F[Option[Account]]
 }
 
@@ -25,6 +27,5 @@ object Accounts{
             }
           )
       }
-
     }
 }
