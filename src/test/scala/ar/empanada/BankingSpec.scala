@@ -16,7 +16,6 @@ class BankingSpec extends SpecificationLike with ScalaCheck with Matchers with C
 
   "create account >> get account" should {
     "return a new account with zero balance " in {
-
       val map: IO[Ref[IO, Map[AccountId, Money]]] = IO.ref(Map())
       map.flatMap(ref => {
         Accounts.make[IO](ref).createNew
@@ -31,7 +30,6 @@ class BankingSpec extends SpecificationLike with ScalaCheck with Matchers with C
 
     "deposit money" should {
       "add up money to its account balance" in {
-        pending
         import gen.generators._
         val map: IO[Ref[IO, Map[AccountId, Money]]] = IO.ref(Map())
         forAll(positiveAccountBalance, positiveMoney) { (account, moneyToAdd) =>
